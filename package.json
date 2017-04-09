@@ -4,7 +4,9 @@
   "description": "Parse AMAZON.DATE to a date range",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+      "test": "npm run jshint && npm run mocha",
+      "mocha": "./node_modules/.bin/mocha",
+      "jshint": "./node_modules/.bin/jshint *.js test/*.js"
   },
   "keywords": [
     "Amazom",

@@ -1,6 +1,6 @@
 {
   "name": "amazon-date-parser",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Parse AMAZON.DATE to a date range",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,9 @@
   "devDependencies": {
     "mocha": "3.2.*",
     "jshint": "2.9.*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/niklongstone/amazon-date-parser.git"
   }
 }

@@ -25,10 +25,10 @@ function AmazonDateParser(rawDate) {
             lastDay = new Date(lastYearDate.getFullYear(), lastYearDate.getMonth() + 12, 0);
         } else {
             if (rawDate === 'PRESENT_REF') {
-                var now = Date(Date.now());
+                var now = new Date(Date.now());
 
                 return {
-                    startDate: new Date(now),
+                    startDate: now,
                     endDate: now
                 };
             } else {

@@ -1,6 +1,6 @@
 {
   "name": "amazon-date-parser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Parse AMAZON.DATE to a date range",
   "main": "index.js",
   "scripts": {

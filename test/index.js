@@ -18,9 +18,9 @@ describe('AmazonDateParser', function() {
 
             var resDate = new Date(date.startDate.getFullYear(), date.startDate.getMonth(), date.startDate.getDay(), date.startDate.getHours(), date.startDate.getMinutes());
 
-            assert.equal(date.startDate, date.endDate, 'startDate and endDate are not equal');
+            assert.deepEqual(date.startDate, date.endDate, 'startDate and endDate are not equal');
             //does not compare seconds because can fail during a slow test execution.
-            assert.equal(resDate.toString(), expected.toString());
+            assert.equal(resDate.toString(), expected.toString());            
         });
 
         it('should return a correct date range given a single day', function() {
@@ -34,7 +34,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
 
@@ -49,7 +49,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
         it('should return a correct date range given a weekend', function() {
@@ -63,7 +63,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
         it('should return a correct date range given a month', function() {
@@ -77,7 +77,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
         it('should return a correct date range given a year', function() {
@@ -91,7 +91,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
         it('should return a correct date range given a decade', function() {
@@ -105,7 +105,7 @@ describe('AmazonDateParser', function() {
 
             var date = new AmazonDateParser(rawDate);
 
-            assert.equal(JSON.stringify(date), JSON.stringify(expected));
+            assert.deepEqual(date, expected);
         });
 
     });

@@ -1,9 +1,17 @@
 var assert = require('assert');
 var AmazonDateParser = require('../index');
 
+
 describe('AmazonDateParser', function() {
 
     describe('constructor', function() {
+
+        var timezones = [
+        'Africa/Dakar', 'Europe/London', 'Africa/Casablanca', 'Europe/Berlin', 'Africa/Bangui', 'Africa/Ceuta', 'Africa/Cairo', 'Europe/Istanbul', 'Asia/Dubai', 
+        'Indian/Maldives', 'Asia/Dhaka', 'Asia/Saigon', 'Asia/Brunei', 'Asia/Tokyo', 'Australia/North', 'Australia/Melbourne', 'Pacific/Bougainville', 'Pacific/Auckland', 
+        'Atlantic/Cape_Verde', 'America/Noronha', 'America/Argentina/Buenos_Aires', 'America/Boa_Vista', 'America/Bogota', 'America/New_York', 'America/Chicago', 
+        'America/Denver', 'America/Los_Angeles', 'America/Juneau', 'Pacific/Honolulu', 'Pacific/Midway'
+        ];
 
         it('should throw an error if the constructor parameter is not provided', function() {
           assert.throws(function(){new AmazonDateParser();}, Error);
@@ -58,14 +66,30 @@ describe('AmazonDateParser', function() {
             assert.deepEqual(date, expectedJSON(startDate, endDate));
         });
 
-        it('should return a correct date range given a month', function() {
-            var rawDate = '2017-01';
-            var startDate = new Date(rawDate + '-01').setUTCHours(0,0,0,0);
-            var endDate = new Date(rawDate + '-31').setUTCHours(23, 59, 59, 999);
-
-            var date = new AmazonDateParser(rawDate);
-
-            assert.deepEqual(date, expectedJSON(startDate, endDate));
+        it('should return a correct date range given a month for different timezones', function() {
+            for (var monthInYear = 1; monthInYear < 13; monthInYear++) {
+                var month = monthInYear;
+                if (monthInYear < 10) month = '0' + month;
+                var rawDate = '2017-' + month;
+             //   for (var i = 0, len = timezones.length; i < len; i++) {
+               //     process.env.TZ = timezones
+               //
+               var date = new Date(rawDate);
+               firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                lastDay = new Date(date.getFullYear(), date.getMonth() +1, 0);
+                console.log(lastDay);
+     var x = new Date();
+    var currentTimeZoneOffsetInHours = x.getTimezoneOffset() / 60;
+    currentTimeZoneOffsetInHours *= -1;
+    console.log(currentTimeZoneOffsetInHours);
+    
+    var startDate = new Date(firstDay).setHours(0 + currentTimeZoneOffsetInHours, 0, 0, 0);
+    var endDate = new Date(lastDay).setHours(23 + currentTimeZoneOffsetInHours, 59, 59, 999);
+                    var date = new AmazonDateParser(rawDate);
+                    console.log( 'amazon date' + JSON.stringify(date));
+                    assert.deepEqual(date, expectedJSON(startDate, endDate), 'Failed to parse ' + rawDate);
+              // }
+            }
         });
 
         it('should return a correct date range given a spring season', function() {
@@ -219,6 +243,8 @@ describe('AmazonDateParser', function() {
             var date = new AmazonDateParser(rawDate);
 
             assert.deepEqual(date, expected);
+            assert.deepEqual(date.startDate.getMonth(), 0);
+            assert.deepEqual(date.endDate.getMonth(), 11);
         });
 
         it('should return a correct date range given a decade', function() {

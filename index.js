@@ -82,13 +82,28 @@ function AmazonDateParser(rawDate, options) {
         } else if (res.length === 2) {
             firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
             lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+     var x = new Date();
+    var currentTimeZoneOffsetInHours = x.getTimezoneOffset() / 60;
+    currentTimeZoneOffsetInHours *= -1;
+    console.log(currentTimeZoneOffsetInHours);
+    
+    var startDate = new Date(firstDay).setHours(0 + currentTimeZoneOffsetInHours, 0, 0, 0);
+    var endDate = new Date(lastDay).setHours(23 + currentTimeZoneOffsetInHours, 59, 59, 999);
+    eventDate.startDate = new Date(startDate);
+    eventDate.endDate = new Date(endDate);
+    return eventDate;
+         console.log(lastDay.getTimezoneOffset());
         } else {
             firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
             lastDay = new Date(date.getFullYear(), date.getMonth() + 12, 0);
         }
     }
-    var startDate = new Date(firstDay).setUTCHours(0, 0, 0, 0);
-    var endDate = new Date(lastDay).setUTCHours(23, 59, 59, 999);
+    var x = new Date();
+    var currentTimeZoneOffsetInHours = x.getTimezoneOffset() / 60;
+    console.log(currentTimeZoneOffsetInHours);
+    
+    var startDate = new Date(firstDay).setUTCHours(0 , 0, 0, 0);
+    var endDate = new Date(lastDay).setUTCHours(23 , 59, 59, 999);
     eventDate.startDate = new Date(startDate);
     eventDate.endDate = new Date(endDate);
 

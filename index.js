@@ -1,7 +1,7 @@
 function AmazonDateParser(rawDate, options) {
     rawDate = (typeof rawDate == 'undefined') ? '' : rawDate;
 
-    var date = new Date(Date.parse(rawDate));
+    var date = new Date(rawDate);
     var result;
     var eventDate = {};
     var res = rawDate.split("-");
@@ -45,25 +45,29 @@ function AmazonDateParser(rawDate, options) {
     if (isNaN(date) && rawDate !== null) {
         if (res.length === 2 && (res[1] === 'SP' || res[1] === 'SU' || res[1] === 'FA' || res[1] === 'WI')) {
             season = res[1];
-            eventDate.startDate = new Date(Date.UTC(res[0], options.seasons[season].startDate[0], options.seasons[season].startDate[1], 0, 0, 0, 0));
+            eventDate.startDate = new Date(new Date(res[0], options.seasons[season].startDate[0], options.seasons[season].startDate[1], 0, 0, 0, 0));
             eventDate.endDate  = new Date(res[0], options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999);
             if (options.seasons[season].endDate[0] === 2 && options.seasons[season].endDate[1] === 0) {
-                eventDate.endDate  = new Date(Date.UTC(parseInt(res[0]) + 1, options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999));
+                eventDate.endDate  = new Date(new Date(parseInt(res[0]) + 1, options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999));
             }
 
             return eventDate;
         } else if (res.length === 2 && res[1].indexOf('W') > -1) {
-            dates = getWeekData(res);
-            firstDay = new Date(dates.startDate);
-            lastDay = new Date(dates.endDate);
+            firstDay = getFirstDayOfWeek(res[0], parseInt(res[1].substr(1)));
+            var sevenDaysInMinutes = 10079; //six days and 23 hours
+            lastDay = new Date(firstDay.getTime() + (sevenDaysInMinutes*60000));
+            lastDay.setSeconds(59);
+            lastDay.setMilliseconds(999);
+
+            return outputDates(firstDay, lastDay);
         } else if (res.length === 3) {
-            dates = getWeekendData(res);
-            firstDay = new Date(dates.startDate);
-            lastDay = new Date(dates.endDate);
+            return getWeekendData(res);
         } else if (res.length === 1  && res[0].indexOf('X') > -1) {
             var partialYear = res[0].substring(0,3);
-            firstDay = new Date(partialYear + 0);
-            lastDay = Date.UTC(partialYear + 9, 12, 0);
+            firstDay = new Date(partialYear + 0, 0, 1, 0, 0, 0);
+            lastDay = new Date(partialYear + 9, 12, 0, 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
         } else {
             if (rawDate === 'PRESENT_REF') {
                 var now = new Date(Date.now());
@@ -78,13 +82,20 @@ function AmazonDateParser(rawDate, options) {
         }
     } else {
         if (res.length === 3) {
-            firstDay = lastDay = date;
+            firstDay = new Date(res[0], res[1] -1, res[2], 0, 0, 0);
+            lastDay = new Date(res[0], res[1] -1, res[2], 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
         } else if (res.length === 2) {
-            firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-            lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            firstDay = new Date(res[0], res[1] -1);
+            lastDay = new Date(res[0], res[1], 0, 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
         } else {
-            firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-            lastDay = new Date(date.getFullYear(), date.getMonth() + 12, 0);
+            firstDay = new Date(res[0], 0, 1, 0, 0, 0);
+            lastDay = new Date(res[0], 11, 31, 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
         }
     }
     var startDate = new Date(firstDay).setUTCHours(0, 0, 0, 0);
@@ -99,39 +110,34 @@ function getWeekendData(res) {
     if (res.length === 3) {
         var saturdayIndex = 5;
         var sundayIndex = 6;
-        var weekNumber = res[1].substring(1);
-        var weekStart = w2date(res[0], weekNumber, saturdayIndex);
-        var weekEnd = w2date(res[0], weekNumber, sundayIndex);
+        var weekNumber = parseInt(res[1].substring(1));
+        var firstDayOfWeek = getFirstDayOfWeek(res[0], weekNumber);
+        var weekendStart, weekendEnd;
+
+        firstDayOfWeek.setHours((5 * 24));
+        weekendStart = firstDayOfWeek;
+        weekendEnd = new Date(firstDayOfWeek);
+        weekendEnd.setHours((2 * 24) - 1);
+        weekendEnd.setMinutes(59);
+        weekendEnd.setSeconds(59);
+        weekendEnd.setMilliseconds(999);
 
         return {
-            startDate: weekStart,
-            endDate: weekEnd,
+            startDate: weekendStart,
+            endDate: weekendEnd,
         };
     }
 }
 
-function getWeekData(res) {
-    if (res.length === 2) {
-        var mondayIndex = 0;
-        var sundayIndex = 6;
-        var weekNumber = res[1].substring(1);
-        var weekStart = w2date(res[0], weekNumber, mondayIndex);
-        var weekEnd = w2date(res[0], weekNumber, sundayIndex);
+function getFirstDayOfWeek(year, week) {
+    var date = new Date(year, 0, 1);
+    var offset = date.getTimezoneOffset();
+    date.setDate(date.getDate() + 4 - (date.getDay() || 7));
+    date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000 * (week + (year == date.getFullYear() ? -1 : 0 )));
+    date.setTime(date.getTime() + (date.getTimezoneOffset() - offset) * 60 * 1000);
+    date.setDate(date.getDate() - 3);
 
-        return {
-            startDate: weekStart,
-            endDate: weekEnd,
-        };
-    }
-}
-
-function w2date(year, wn, dayNb) {
-    var day = 86400000;
-    var j10 = new Date(year, 0, 10, 12, 0, 0),
-        j4 = new Date(year, 0, 4, 12, 0, 0),
-        mon1 = j4.getTime() - j10.getDay() * day;
-
-    return new Date(mon1 + ((wn - 1) * 7 + dayNb) * day);
+    return date;
 }
 
 function southHemisphereTranslation(meteoSeasonsNorthHemisphere) {
@@ -140,6 +146,13 @@ function southHemisphereTranslation(meteoSeasonsNorthHemisphere) {
         'SU': meteoSeasonsNorthHemisphere.WI,
         'FA': meteoSeasonsNorthHemisphere.SP,
         'WI': meteoSeasonsNorthHemisphere.SU
+    };
+}
+
+function outputDates(start, end) {
+    return {
+        startDate: start,
+        endDate: end
     };
 }
 

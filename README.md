@@ -40,6 +40,7 @@ try {
 * week: `2017-W48`
 * weekend: `2017-W48-WE`
 * month: `2017-11`
+* quarter: `2018-Q2`
 * seasons: `2017-SP`, `2017-WI`, `2017-FA`, `2017-SU` (see below)
 * year: `2018`
 * decade: `201X`

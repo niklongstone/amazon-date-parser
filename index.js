@@ -60,6 +60,14 @@ function AmazonDateParser(rawDate, options) {
             lastDay.setMilliseconds(999);
 
             return outputDates(firstDay, lastDay);
+        } else if (res.length === 2 && res[1].indexOf('Q') > -1) {
+          var quarter = parseInt(res[1].substring(1));
+          var startMonth = ((12/4) * quarter) - 3;
+          var endMonth = startMonth + 2;
+          eventDate.startDate = new Date(res[0], startMonth, 1, 0, 0, 0, 0);
+          eventDate.endDate  = new Date(res[0], (endMonth + 1), 0, 23, 59, 59, 999);
+
+          return eventDate;
         } else if (res.length === 3) {
             return getWeekendData(res);
         } else if (res.length === 1  && res[0].indexOf('X') > -1) {

@@ -222,6 +222,47 @@ describe('AmazonDateParser', function() {
 
             assert.deepEqual(date, expectedJSON(startDate, endDate));
         });
+
+        it('should return a correct date range given a 1st quarter', function() {
+            var rawDate = '2018-Q1';
+            var startDate = createStartDate(2018, 1, 1);
+            var endDate = createEndDate(2018, 3, 31);
+
+            var date = new AmazonDateParser(rawDate);
+
+            assert.deepEqual(date, expectedJSON(startDate, endDate));
+        });
+
+        it('should return a correct date range given a 2nd quarter', function() {
+            var rawDate = '2018-Q2';
+            var startDate = createStartDate(2018, 4, 1);
+            var endDate = createEndDate(2018, 6, 30);
+
+            var date = new AmazonDateParser(rawDate);
+
+            assert.deepEqual(date, expectedJSON(startDate, endDate));
+        });
+
+        it('should return a correct date range given a 3rd quarter', function() {
+            var rawDate = '2018-Q3';
+            var startDate = createStartDate(2018, 7, 1);
+            var endDate = createEndDate(2018, 9, 30);
+
+            var date = new AmazonDateParser(rawDate);
+
+            assert.deepEqual(date, expectedJSON(startDate, endDate));
+        });
+
+        it('should return a correct date range given a 4th quarter', function() {
+            var rawDate = '2018-Q4';
+            var startDate = createStartDate(2018, 10, 1);
+            var endDate = createEndDate(2018, 12, 31);
+
+            var date = new AmazonDateParser(rawDate);
+
+            assert.deepEqual(date, expectedJSON(startDate, endDate));
+        });
+
     });
 
     function createStartDate(y, m, g) {

@@ -24,7 +24,6 @@ function AmazonDateParser(rawDate, options) {
             endDate: [2, 0]     // end of February (28th or 29th)
         }
     };
-
     if (typeof options === 'undefined') {
         options = { seasons: meteoSeasonsNorthHemisphere };
     } else {
@@ -41,37 +40,45 @@ function AmazonDateParser(rawDate, options) {
             }
         }
     }
-
     if (isNaN(date) && rawDate !== null) {
         if (res.length === 2 && (res[1] === 'SP' || res[1] === 'SU' || res[1] === 'FA' || res[1] === 'WI')) {
             season = res[1];
             eventDate.startDate = new Date(new Date(res[0], options.seasons[season].startDate[0], options.seasons[season].startDate[1], 0, 0, 0, 0));
-            eventDate.endDate  = new Date(res[0], options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999);
+            eventDate.endDate = new Date(res[0], options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999);
             if (options.seasons[season].endDate[0] === 2 && options.seasons[season].endDate[1] === 0) {
-                eventDate.endDate  = new Date(new Date(parseInt(res[0]) + 1, options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999));
+                eventDate.endDate = new Date(new Date(parseInt(res[0]) + 1, options.seasons[season].endDate[0], options.seasons[season].endDate[1], 23, 59, 59, 999));
             }
-
             return eventDate;
         } else if (res.length === 2 && res[1].indexOf('W') > -1) {
             firstDay = getFirstDayOfWeek(res[0], parseInt(res[1].substr(1)));
             var sevenDaysInMinutes = 10079; //six days and 23 hours
-            lastDay = new Date(firstDay.getTime() + (sevenDaysInMinutes*60000));
+            lastDay = new Date(firstDay.getTime() + (sevenDaysInMinutes * 60000));
             lastDay.setSeconds(59);
             lastDay.setMilliseconds(999);
 
             return outputDates(firstDay, lastDay);
         } else if (res.length === 2 && res[1].indexOf('Q') > -1) {
-          var quarter = parseInt(res[1].substring(1));
-          var startMonth = ((12/4) * quarter) - 3;
-          var endMonth = startMonth + 2;
-          eventDate.startDate = new Date(res[0], startMonth, 1, 0, 0, 0, 0);
-          eventDate.endDate  = new Date(res[0], (endMonth + 1), 0, 23, 59, 59, 999);
+            var quarter = parseInt(res[1].substring(1));
+            var startMonth = ((12 / 4) * quarter) - 3;
+            var endMonth = startMonth + 2;
+            eventDate.startDate = new Date(res[0], startMonth, 1, 0, 0, 0, 0);
+            eventDate.endDate = new Date(res[0], (endMonth + 1), 0, 23, 59, 59, 999);
 
-          return eventDate;
+            return eventDate;
+        } else if (res.length === 3 && res[1].indexOf('XX') > -1 && res[2].indexOf('XX') > -1) {
+            firstDay = new Date(res[0], 0, 1, 0, 0, 0);
+            lastDay = new Date(res[0], 11, 31, 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
+        } else if (res.length === 3 && res[2].indexOf('XX') > -1) {
+            firstDay = new Date(res[0], res[1] - 1);
+            lastDay = new Date(res[0], res[1], 0, 23, 59, 59, 999);
+
+            return outputDates(firstDay, lastDay);
         } else if (res.length === 3) {
             return getWeekendData(res);
-        } else if (res.length === 1  && res[0].indexOf('X') > -1) {
-            var partialYear = res[0].substring(0,3);
+        } else if (res.length === 1 && res[0].indexOf('X') > -1) {
+            var partialYear = res[0].substring(0, 3);
             firstDay = new Date(partialYear + 0, 0, 1, 0, 0, 0);
             lastDay = new Date(partialYear + 9, 12, 0, 23, 59, 59, 999);
 
@@ -90,12 +97,12 @@ function AmazonDateParser(rawDate, options) {
         }
     } else {
         if (res.length === 3) {
-            firstDay = new Date(res[0], res[1] -1, res[2], 0, 0, 0);
-            lastDay = new Date(res[0], res[1] -1, res[2], 23, 59, 59, 999);
+            firstDay = new Date(res[0], res[1] - 1, res[2], 0, 0, 0);
+            lastDay = new Date(res[0], res[1] - 1, res[2], 23, 59, 59, 999);
 
             return outputDates(firstDay, lastDay);
         } else if (res.length === 2) {
-            firstDay = new Date(res[0], res[1] -1);
+            firstDay = new Date(res[0], res[1] - 1);
             lastDay = new Date(res[0], res[1], 0, 23, 59, 59, 999);
 
             return outputDates(firstDay, lastDay);
@@ -141,7 +148,7 @@ function getFirstDayOfWeek(year, week) {
     var date = new Date(year, 0, 1);
     var offset = date.getTimezoneOffset();
     date.setDate(date.getDate() + 4 - (date.getDay() || 7));
-    date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000 * (week + (year == date.getFullYear() ? -1 : 0 )));
+    date.setTime(date.getTime() + 7 * 24 * 60 * 60 * 1000 * (week + (year == date.getFullYear() ? -1 : 0)));
     date.setTime(date.getTime() + (date.getTimezoneOffset() - offset) * 60 * 1000);
     date.setDate(date.getDate() - 3);
 

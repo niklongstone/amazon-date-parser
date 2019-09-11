@@ -36,13 +36,14 @@ try {
 ```
 
 ## Input values:
+* right now: `PRESENT_REF`
 * single day: `2017-11-24`
 * week: `2017-W48`
 * weekend: `2017-W48-WE`
-* month: `2017-11`
+* month: `2017-11` and `2019-11-XX`
 * quarter: `2018-Q2`
 * seasons: `2017-SP`, `2017-WI`, `2017-FA`, `2017-SU` (see below)
-* year: `2018`
+* year: `2018` and `2020-XX`
 * decade: `201X`
 
 ## Seasons

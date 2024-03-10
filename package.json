@@ -16,8 +16,8 @@
   "author": "Nicola Pietroluongo <nik.longstone@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "jshint": "^2.10.2",
-    "mocha": "^6.1.4"
+    "jshint": "^2.13.6",
+    "mocha": "^10.2.4"
   },
   "repository": {
     "type": "git",
